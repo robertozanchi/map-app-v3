@@ -190,8 +190,8 @@ var ViewModel = function() {
 				markerReference = markers[k];
 				toggleBounce(markerReference);
 				// infoWindow.setContent("<b>" + locationsModel[k].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + locationsModel[k].description + "</div>");
-				infoWindow.setContent("<b>" + data.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
-				getWikipediaApi(data.name);
+				infoWindow.setContent("<b>" + locationsModel[k].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
+				getWikipediaApi(locationsModel[k].name);
 				infoWindow.open(map, markerReference);
 			}
 		}
