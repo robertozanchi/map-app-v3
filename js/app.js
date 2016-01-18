@@ -1,21 +1,13 @@
-var markersArray = []; // Store all the markers
-var map;
 var infoWindow;
+var infoWindows = []; // Store all the infoWindows
+var windowContent;
+var map;
+var marker;
+var markers = [];
 var redPin = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'; // Red marker
 var greenPin = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; // Green marker
-var foursquareUrl;
-var CLIENT_ID = 'SKBOEODGEQYE2XC45C10DPD11GFYH2AZXNXBSJCQMYHAJZBL'; // Client id for connecting Foursquare API
-var CLIENT_SECRET = 'LFIXWJ0XVTJHZVER3CWVZWK2MJSICM342AEXV3NANQIEYWLD'; // Client secret for connecting Foursquare API
-var foursquareLocation = '40.8,-74';
-var foursquareQuery = 'coffee';
-var foursquareQueryLimit = '5';
-var foursquareUrl = 'https://api.foursquare.com/v2/venues/search?client_id=' + // Base url for connecting Foursquare API
-												CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
-												'&v=20140806&ll=' + foursquareLocation +'&query=' + foursquareQuery + '&limit=' + foursquareQueryLimit;
-var foursquareLocations = [];
 var $nytHeaderElem = $('#nytimes-header');
 var $nytElem = $('#nytimes-articles');
-// https://api.foursquare.com/v2/venues/search?client_id=SKBOEODGEQYE2XC45C10DPD11GFYH2AZXNXBSJCQMYHAJZBL&client_secret=LFIXWJ0XVTJHZVER3CWVZWK2MJSICM342AEXV3NANQIEYWLD&v=20140806&ll=40.7,-74&query=coffee&limit=10
 
 // Model: hard coded location data
 var locationsModel = [
@@ -61,34 +53,90 @@ function loadMap() {
 
 	map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-	//Create and open InfoWindow.	
+	// Creates a new marker for each location
 	for (var i = 0; i < locationsModel.length; i++) {
-		infoWindow = new google.maps.InfoWindow();
-		var data = locationsModel[i];
-		var myLatlng = new google.maps.LatLng(data.lat, data.lng);
-		
-		var marker = new google.maps.Marker({
-			position: myLatlng,
-			map: map,
-			// title: data.title,
-			animation: google.maps.Animation.DROP,
-			icon: redPin
-		});
-		markersArray.push(marker);
-
-		//Attach click event to the marker.
-		(function (marker, data) {
-			google.maps.event.addListener(marker, "click", function (e) {
-				//Wrap the content inside an HTML DIV in order to set height and width of InfoWindow.
-				infoWindow.setContent("<b>" + data.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
-				getWikipediaApi(data.name);
-				infoWindow.open(map, marker);
-				// Animates the marker
-				toggleBounce(marker);
-			});
-		})(marker, data);
+		addMarker(i);
 	}
-}
+} // New closure for loadMap
+
+function addMarker(i) {
+	marker = new google.maps.Marker({
+		position: new google.maps.LatLng(locationsModel[i].lat, locationsModel[i].lng), // Fix this to take.
+        map: map,
+        icon: redPin,
+        animation: google.maps.Animation.DROP
+    });
+
+    markers.push(marker);
+
+    infoWindow = new google.maps.InfoWindow();
+    windowContent = infoWindow.setContent("<b>" + locationsModel[i].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
+    getWikipediaApi(locationsModel[i].name);
+
+    infoWindows.push(infoWindow);
+
+	(function (marker, location) {
+		google.maps.event.addListener(marker, "click", function (e) {
+		//Wrap the content inside an HTML DIV in order to set height and width of InfoWindow.
+		infoWindow.setContent("<b>" + location.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
+		getWikipediaApi(locationsModel[i].name);
+		infoWindow.open(map, marker);
+				// Animates the marker
+		toggleBounce(marker);
+		});
+	})(marker, locationsModel[i]);
+
+    // google.maps.event.addListener(marker, 'click', function() {
+    // 	var self = this;
+
+    // 	// Open corresponding infowindow
+    // 	infoWindowContent(index, function(windowContent){
+    // 		infoWindow.setContent(windowContent);
+    // 		infoWindow.open(map, self);
+    // 	});
+
+	   //  toggleBounce(self);
+    //       // Let a marker stop bounce after 1.4 second
+    //     setTimeout(stopBounce, 1400);
+    //       // console.log(marker.getAnimation()); //check animation state
+    //     function stopBounce() {
+    //     	self.setAnimation(null);
+    //     	self.setIcon(redPin);
+    //     }
+    // });
+
+} // Closes addMarker()
+
+// Legacy code
+	//Create and open InfoWindow.	
+	// for (var i = 0; i < locationsModel.length; i++) {
+	// 	infoWindow = new google.maps.InfoWindow();
+	// 	var data = locationsModel[i];
+	// 	var myLatlng = new google.maps.LatLng(data.lat, data.lng);
+		
+	// 	var marker = new google.maps.Marker({
+	// 		position: myLatlng,
+	// 		map: map,
+	// 		// title: data.title,
+	// 		animation: google.maps.Animation.DROP,
+	// 		icon: redPin
+	// 	});
+	// 	markers.push(marker);
+
+	// 	//Attach click event to the marker.
+	// 	(function (marker, data) {
+	// 		google.maps.event.addListener(marker, "click", function (e) {
+	// 			//Wrap the content inside an HTML DIV in order to set height and width of InfoWindow.
+	// 			infoWindow.setContent("<b>" + data.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
+	// 			getWikipediaApi(data.name);
+	// 			infoWindow.open(map, marker);
+	// 			// Animates the marker
+	// 			toggleBounce(marker);
+	// 		});
+	// 	})(marker, data);
+	// }
+
+//} // Old closure for Loadmap
 
 function getWikipediaApi(place) {
 	var $windowContent = $('#description');
@@ -139,14 +187,17 @@ var ViewModel = function() {
 		var markerReference;
 		for(var k = 0; k < locationsModel.length; k++) {
 			if(locationsModel[k].name == clickedLocation.name) {
-				markerReference = markersArray[k];
+				markerReference = markers[k];
 				toggleBounce(markerReference);
-				infoWindow.setContent("<b>" + locationsModel[k].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + locationsModel[k].description + "</div>");
+				// infoWindow.setContent("<b>" + locationsModel[k].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + locationsModel[k].description + "</div>");
+				infoWindow.setContent("<b>" + data.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
+				getWikipediaApi(data.name);
 				infoWindow.open(map, markerReference);
 			}
 		}
 	};
 
+// Alternative search function
 
   // function searchAll(inputContent) {
   //   self.locList.removeAll();
