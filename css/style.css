@@ -1,0 +1,38 @@
+body {
+	font-family: "Roboto", sans-serif;
+	color: #656561;
+	font-weight: 300;
+}
+
+.text-muted {
+	color: #bcbbbb;
+}
+
+.text-thin {
+	font-weight: 100;
+}
+
+.text-center {
+	margin-bottom: 20px;
+}
+
+.title-super {
+	font-size: 50px;
+}
+
+.title-logo {
+	margin-top: 20px;
+	font-size: 50px;
+}
+
+hr {
+	border-width: 5px;
+}
+
+h2 {
+	margin-bottom: 20px;
+}
+
+#map{
+  min-height: 600px;
+}
