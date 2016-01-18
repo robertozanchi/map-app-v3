@@ -43,8 +43,11 @@ var locationsModel = [
 	}
 ];
 
-function loadMap() {
+var Loc = function(location) {
+	this.name = ko.observable(location.name);
+};
 
+function loadMap() {
 	var mapOptions = {
 		center: new google.maps.LatLng(40.767513, -73.985109),
 		zoom: 14,
@@ -85,31 +88,11 @@ function addMarker(i) {
 		toggleBounce(marker);
 		});
 	})(marker, locationsModel[i]);
+}
 
-    // google.maps.event.addListener(marker, 'click', function() {
-    // 	var self = this;
-
-    // 	// Open corresponding infowindow
-    // 	infoWindowContent(index, function(windowContent){
-    // 		infoWindow.setContent(windowContent);
-    // 		infoWindow.open(map, self);
-    // 	});
-
-	   //  toggleBounce(self);
-    //       // Let a marker stop bounce after 1.4 second
-    //     setTimeout(stopBounce, 1400);
-    //       // console.log(marker.getAnimation()); //check animation state
-    //     function stopBounce() {
-    //     	self.setAnimation(null);
-    //     	self.setIcon(redPin);
-    //     }
-    // });
-
-} // Closes addMarker()
-
-function getWikipediaApi(place) {
+function getWikipediaApi(location) {
 	var $windowContent = $('#description');
-	var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + place + '&format=json&callback=wikiCallback';
+	var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + location + '&format=json&callback=wikiCallback';
     var wikiRequestTimeout = setTimeout(function() {
                     $windowContent.text("failed to get wikipedia resources");
                 }, 8000);
@@ -145,11 +128,11 @@ function toggleBounce(marker) {
 var ViewModel = function() {
 	var self = this;
 
-	// self.points = ko.observableArray(locationsModel);
-
-	// for(var k = 0; k < self.points().length; k++) {
-	// 	self.points()[k].description = getApi(self.points()[k].name);
-	// }
+	// Store all the locations in locList
+	self.locList = ko.observableArray([]);
+	locationsModel.forEach(function(locItem){
+		self.locList.push(new Loc(locItem));
+	});
 
 	// Click a place on the list, show marker and open infoWindow on the map
 	self.setLoc = function(clickedLocation) {
