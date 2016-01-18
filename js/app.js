@@ -57,7 +57,7 @@ function loadMap() {
 	for (var i = 0; i < locationsModel.length; i++) {
 		addMarker(i);
 	}
-} // New closure for loadMap
+}
 
 function addMarker(i) {
 	marker = new google.maps.Marker({
@@ -107,37 +107,6 @@ function addMarker(i) {
 
 } // Closes addMarker()
 
-// Legacy code
-	//Create and open InfoWindow.	
-	// for (var i = 0; i < locationsModel.length; i++) {
-	// 	infoWindow = new google.maps.InfoWindow();
-	// 	var data = locationsModel[i];
-	// 	var myLatlng = new google.maps.LatLng(data.lat, data.lng);
-		
-	// 	var marker = new google.maps.Marker({
-	// 		position: myLatlng,
-	// 		map: map,
-	// 		// title: data.title,
-	// 		animation: google.maps.Animation.DROP,
-	// 		icon: redPin
-	// 	});
-	// 	markers.push(marker);
-
-	// 	//Attach click event to the marker.
-	// 	(function (marker, data) {
-	// 		google.maps.event.addListener(marker, "click", function (e) {
-	// 			//Wrap the content inside an HTML DIV in order to set height and width of InfoWindow.
-	// 			infoWindow.setContent("<b>" + data.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
-	// 			getWikipediaApi(data.name);
-	// 			infoWindow.open(map, marker);
-	// 			// Animates the marker
-	// 			toggleBounce(marker);
-	// 		});
-	// 	})(marker, data);
-	// }
-
-//} // Old closure for Loadmap
-
 function getWikipediaApi(place) {
 	var $windowContent = $('#description');
 	var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + place + '&format=json&callback=wikiCallback';
@@ -149,7 +118,7 @@ function getWikipediaApi(place) {
     	dataType: "jsonp",
         jsonp: "callback",
         success: function(response) {
-        	var articleDescription = "Description from Wikipedia: " + response[2][0];
+        	var articleDescription = "<i>Wikipedia: </i>" + response[2][0];
         	$windowContent.text('');
         	$windowContent.append(articleDescription);
         	clearTimeout(wikiRequestTimeout);
@@ -189,7 +158,6 @@ var ViewModel = function() {
 			if(locationsModel[k].name == clickedLocation.name) {
 				markerReference = markers[k];
 				toggleBounce(markerReference);
-				// infoWindow.setContent("<b>" + locationsModel[k].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + locationsModel[k].description + "</div>");
 				infoWindow.setContent("<b>" + locationsModel[k].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
 				getWikipediaApi(locationsModel[k].name);
 				infoWindow.open(map, markerReference);
