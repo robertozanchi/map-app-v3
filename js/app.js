@@ -58,23 +58,26 @@ function loadMap() {
 
 	// Creates a new marker for each location
 	for (var i = 0; i < locationsModel.length; i++) {
-		addMarker(i);
+		addMarker(i, locationsModel[i]);
 	}
 }
 
-function addMarker(i) {
+function addMarker(i, location) {
 	marker = new google.maps.Marker({
 		position: new google.maps.LatLng(locationsModel[i].lat, locationsModel[i].lng), // Fix this to take.
         map: map,
         icon: redPin,
         animation: google.maps.Animation.DROP
     });
+	
+	// Binds new marker to respective location
+	location.marker = marker;
 
     markers.push(marker);
 
     infoWindow = new google.maps.InfoWindow();
-    windowContent = infoWindow.setContent("<b>" + locationsModel[i].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
-    getWikipediaApi(locationsModel[i].name);
+    // windowContent = infoWindow.setContent("<b>" + locationsModel[i].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
+    // getWikipediaApi(locationsModel[i].name);
 
     infoWindows.push(infoWindow);
 
@@ -84,7 +87,7 @@ function addMarker(i) {
 		infoWindow.setContent("<b>" + location.name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
 		getWikipediaApi(locationsModel[i].name);
 		infoWindow.open(map, marker);
-				// Animates the marker
+		// Animates the marker
 		toggleBounce(marker);
 		});
 	})(marker, locationsModel[i]);
@@ -148,30 +151,30 @@ var ViewModel = function() {
 		}
 	};
 
-// Alternative search function
-
-  // function searchAll(inputContent) {
-  //   self.locList.removeAll();
-  //   for(var i=0; i<iniLocs.length; i++) {
-  //     // Close all the infoWindows, just in case some infoWindow is still open
-  //     infoWindows[i].close();
-  //     markers[i].setVisible(false);
-  //     // Show marched results in view list and marker
-  //     if(iniLocs[i][self.selectedChoice()].toLowerCase().indexOf(inputContent.toLowerCase()) >= 0) {
-  //         self.locList.push(new Loc(iniLocs[i]));
-  //         markers[i].setVisible(true);
-  //     }
-  //   }
-  // }
-
 	// Search functionality on location names
 	self.query = ko.observable('');
 
-	self.search = ko.computed(function(){
+
+self.search = ko.computed(function(){
+		for(var i=0; i<locationsModel.length; i++) {
+			locationsModel[i].marker.setVisible(true);
+		}
 		return ko.utils.arrayFilter(locationsModel, function(point){
-			return point.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
-    	});
-  	});
+		  if (point.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
+		    return true;
+		  }
+		  point.marker.setVisible(false); // Will work because each point will have a reference to the marker
+			return false;
+});
+});
+
+	// Sandbox
+	self.closeMarkers = function() {
+		for(var i=0; i<locationsModel.length; i++) {
+			infoWindows[i].close();
+			markers[i].setVisible(false);
+	}
+}
 
 	// New York Times articles
 	self.getArticles = ko.computed(function() {
