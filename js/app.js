@@ -7,7 +7,7 @@ var markers = [];
 var redPin = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
 var greenPin = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
 var $nytHeaderElem = $('#nytimes-header');
-var $nytElem = $('#nytimes-articles');
+// var $nytElem = $('#nytimes-articles');
 
 // Model: hard coded location data
 var locationsModel = [
@@ -60,13 +60,13 @@ function loadMap() {
 
 function addMarker(i, location) {
 	marker = new google.maps.Marker({
-		position: new google.maps.LatLng(location.lat, location.lng), // Fix this to take.
+		position: new google.maps.LatLng(location.lat, location.lng),
         map: map,
         icon: redPin,
         animation: google.maps.Animation.DROP
     });
-	
-	// Binds new marker to respective location
+
+	// Binds marker to location
 	location.marker = marker;
 
     markers.push(marker);
@@ -151,7 +151,7 @@ var ViewModel = function() {
 		  if (point.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
 		    return true;
 		  }
-		  point.marker.setVisible(false); // Will work because each point will have a reference to the marker
+		  point.marker.setVisible(false);
 			return false;
 		});
 	});
@@ -161,7 +161,7 @@ var ViewModel = function() {
 
 	self.getArticles = ko.computed(function() {
 
-		$nytElem.text("");
+		// $nytElem.text("");
 		var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + 'New York City' + '&sort=newest&api-key=7ea908fcd81e9b8656eef08e2c01ffd3:17:60789344';
 	
 		$.getJSON(nytimesUrl, function(data) {
@@ -169,29 +169,12 @@ var ViewModel = function() {
 			for (var i = 0; i < articles.length; i++) {
 				var article = articles[i];
 				self.NYTarticles.push({url: article.web_url, headline: article.headline.main, snippet: article.snippet});
-				$nytElem.append('<li class="article">'+'<a href="'+ article.web_url +'">'+ article.headline.main +'</a>'+'<p>'+ article.snippet +'</p>'+'</li>');
+				// $nytElem.append('<li class="article">'+'<a href="'+ article.web_url +'">'+ article.headline.main +'</a>'+'<p>'+ article.snippet +'</p>'+'</li>');
 			}
 		}).error(function(e) {
 			$nytHeaderElem.text('New York Times Articles Could Not Be Loaded');
 		});
 	});
-
-	// Working JQuery version
-	// self.getArticles = ko.computed(function() {
-
-	// 	$nytElem.text("");
-	// 	var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + 'New York City' + '&sort=newest&api-key=7ea908fcd81e9b8656eef08e2c01ffd3:17:60789344';
-	
-	// 	$.getJSON(nytimesUrl, function(data) {
-	// 		articles = data.response.docs;
-	// 		for (var i = 0; i < articles.length; i++) {
-	// 			var article = articles[i];
-	// 			$nytElem.append('<li class="article">'+'<a href="'+ article.web_url +'">'+ article.headline.main +'</a>'+'<p>'+ article.snippet +'</p>'+'</li>');
-	// 		}
-	// 	}).error(function(e) {
-	// 		$nytHeaderElem.text('New York Times Articles Could Not Be Loaded');
-	// 	});
-	// });
 };
 
 ko.applyBindings(new ViewModel());
