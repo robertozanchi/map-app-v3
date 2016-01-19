@@ -51,7 +51,12 @@
           <div class="col-md-12"><br>
           <h2 id="nytimes-header" class="text-thin">New York Times articles about New York City</h2>
           <h4 class="text-thin">What's going on in New York City?</h4>
-          <ul id="nytimes-articles" class="article-list"></ul>
+          <ul data-bind="foreach: NYTarticles">
+            <li class="article">
+            <a data-bind="attr: { href: url }"><span data-bind="text: headline"></a>
+            <p><span data-bind="text: snippet"></span></p>
+            </li>'
+          </ul>
           </div>
         </div>
       </main>

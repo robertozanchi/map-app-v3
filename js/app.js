@@ -1,11 +1,11 @@
 var infoWindow;
-var infoWindows = []; // Store all the infoWindows
+var infoWindows = [];
 var windowContent;
 var map;
 var marker;
 var markers = [];
-var redPin = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'; // Red marker
-var greenPin = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; // Green marker
+var redPin = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+var greenPin = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
 var $nytHeaderElem = $('#nytimes-header');
 var $nytElem = $('#nytimes-articles');
 
@@ -43,10 +43,6 @@ var locationsModel = [
 	}
 ];
 
-var Loc = function(location) {
-	this.name = ko.observable(location.name);
-};
-
 function loadMap() {
 	var mapOptions = {
 		center: new google.maps.LatLng(40.767513, -73.985109),
@@ -64,7 +60,7 @@ function loadMap() {
 
 function addMarker(i, location) {
 	marker = new google.maps.Marker({
-		position: new google.maps.LatLng(locationsModel[i].lat, locationsModel[i].lng), // Fix this to take.
+		position: new google.maps.LatLng(location.lat, location.lng), // Fix this to take.
         map: map,
         icon: redPin,
         animation: google.maps.Animation.DROP
@@ -76,8 +72,6 @@ function addMarker(i, location) {
     markers.push(marker);
 
     infoWindow = new google.maps.InfoWindow();
-    // windowContent = infoWindow.setContent("<b>" + locationsModel[i].name + "</b><br>" + "<div style = 'width:200px;min-height:60px'>" + "<div id='description'></div>" + "</div>");
-    // getWikipediaApi(locationsModel[i].name);
 
     infoWindows.push(infoWindow);
 
@@ -131,12 +125,6 @@ function toggleBounce(marker) {
 var ViewModel = function() {
 	var self = this;
 
-	// Store all the locations in locList
-	self.locList = ko.observableArray([]);
-	locationsModel.forEach(function(locItem){
-		self.locList.push(new Loc(locItem));
-	});
-
 	// Click a place on the list, show marker and open infoWindow on the map
 	self.setLoc = function(clickedLocation) {
 		var markerReference;
@@ -154,29 +142,23 @@ var ViewModel = function() {
 	// Search functionality on location names
 	self.query = ko.observable('');
 
-
-self.search = ko.computed(function(){
-		for(var i=0; i<locationsModel.length; i++) {
-			locationsModel[i].marker.setVisible(true);
-		}
+	//
+	self.search = ko.computed(function(){
+		// for(var i=0; i<locationsModel.length; i++) {
+		// 	locationsModel[i].marker.setVisible(true);
+		// }
 		return ko.utils.arrayFilter(locationsModel, function(point){
 		  if (point.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
 		    return true;
 		  }
 		  point.marker.setVisible(false); // Will work because each point will have a reference to the marker
 			return false;
-});
-});
-
-	// Sandbox
-	self.closeMarkers = function() {
-		for(var i=0; i<locationsModel.length; i++) {
-			infoWindows[i].close();
-			markers[i].setVisible(false);
-	}
-}
+		});
+	});
 
 	// New York Times articles
+	self.NYTarticles = ko.observableArray();
+
 	self.getArticles = ko.computed(function() {
 
 		$nytElem.text("");
@@ -186,12 +168,30 @@ self.search = ko.computed(function(){
 			articles = data.response.docs;
 			for (var i = 0; i < articles.length; i++) {
 				var article = articles[i];
+				self.NYTarticles.push({url: article.web_url, headline: article.headline.main, snippet: article.snippet});
 				$nytElem.append('<li class="article">'+'<a href="'+ article.web_url +'">'+ article.headline.main +'</a>'+'<p>'+ article.snippet +'</p>'+'</li>');
 			}
 		}).error(function(e) {
 			$nytHeaderElem.text('New York Times Articles Could Not Be Loaded');
 		});
 	});
+
+	// Working JQuery version
+	// self.getArticles = ko.computed(function() {
+
+	// 	$nytElem.text("");
+	// 	var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + 'New York City' + '&sort=newest&api-key=7ea908fcd81e9b8656eef08e2c01ffd3:17:60789344';
+	
+	// 	$.getJSON(nytimesUrl, function(data) {
+	// 		articles = data.response.docs;
+	// 		for (var i = 0; i < articles.length; i++) {
+	// 			var article = articles[i];
+	// 			$nytElem.append('<li class="article">'+'<a href="'+ article.web_url +'">'+ article.headline.main +'</a>'+'<p>'+ article.snippet +'</p>'+'</li>');
+	// 		}
+	// 	}).error(function(e) {
+	// 		$nytHeaderElem.text('New York Times Articles Could Not Be Loaded');
+	// 	});
+	// });
 };
 
 ko.applyBindings(new ViewModel());
