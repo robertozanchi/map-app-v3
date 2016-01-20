@@ -56,6 +56,8 @@ function loadMap() {
 	for (var i = 0; i < locationsModel.length; i++) {
 		addMarker(i, locationsModel[i]);
 	}
+
+	ko.applyBindings(new ViewModel());
 }
 
 function addMarker(i, location) {
@@ -144,17 +146,16 @@ var ViewModel = function() {
 
 	//
 	self.search = ko.computed(function(){
-		// for(var i=0; i<locationsModel.length; i++) {
-		// 	locationsModel[i].marker.setVisible(true);
-		// }
-		return ko.utils.arrayFilter(locationsModel, function(point){
-		  if (point.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
-		    return true;
-		  }
-		  point.marker.setVisible(false);
-			return false;
-		});
+
+	return ko.utils.arrayFilter(locationsModel, function(point){
+		if (point.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
+		point.marker.setVisible(true);  // Shows markers if name matches query
+		return true;
+	}
+	point.marker.setVisible(false);
+    return false;
 	});
+});
 
 	// New York Times articles
 	self.NYTarticles = ko.observableArray();
@@ -176,5 +177,3 @@ var ViewModel = function() {
 		});
 	});
 };
-
-ko.applyBindings(new ViewModel());
