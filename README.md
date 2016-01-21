@@ -1,4 +1,10 @@
+# Neighborhood Map Project
 
+This is project 4 of Udacity's Front-End Web Developer Nanodegree.
+
+## Instructions
+1. Clone or dowload project folders from GitHub
+1. 
 
 ####Resources
 

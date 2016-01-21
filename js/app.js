@@ -95,17 +95,16 @@ function getWikipediaApi(location) {
     var wikiRequestTimeout = setTimeout(function() {
                     $windowContent.text("failed to get wikipedia resources");
                 }, 8000);
-    $.ajax({
-    	url: wikiUrl,
-    	dataType: "jsonp",
-        jsonp: "callback",
-        success: function(response) {
-        	var articleDescription = "<i>Wikipedia: </i>" + response[2][0];
-        	$windowContent.text('');
-        	$windowContent.append(articleDescription);
-        	clearTimeout(wikiRequestTimeout);
-        }
-    });
+	$.ajax({
+	  url: wikiUrl,
+	  dataType: "jsonp",
+	  jsonp: "callback"
+	}).done(function(response) {
+		var articleDescription =  response[2][0] + "<i>Source: Wikipedia</i>" ;
+		$windowContent.text('');
+		$windowContent.append(articleDescription);
+		clearTimeout(wikiRequestTimeout);
+	});
 }
 
 // Animates a marker once it is clicked
@@ -161,18 +160,17 @@ var ViewModel = function() {
 	self.NYTarticles = ko.observableArray();
 
 	self.getArticles = ko.computed(function() {
-
-		// $nytElem.text("");
 		var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + 'New York City' + '&sort=newest&api-key=7ea908fcd81e9b8656eef08e2c01ffd3:17:60789344';
-	
-		$.getJSON(nytimesUrl, function(data) {
+
+		$.getJSON(nytimesUrl)
+		.done(function(data) {
 			articles = data.response.docs;
 			for (var i = 0; i < articles.length; i++) {
 				var article = articles[i];
 				self.NYTarticles.push({url: article.web_url, headline: article.headline.main, snippet: article.snippet});
-				// $nytElem.append('<li class="article">'+'<a href="'+ article.web_url +'">'+ article.headline.main +'</a>'+'<p>'+ article.snippet +'</p>'+'</li>');
 			}
-		}).error(function(e) {
+		})
+		.fail(function(e) {
 			$nytHeaderElem.text('New York Times Articles Could Not Be Loaded');
 		});
 	});

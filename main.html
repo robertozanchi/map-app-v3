@@ -9,9 +9,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/jquery-1.11.3.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/knockout-3.4.0.js"></script>
     <script>
       function googleError() {
         alert("Google map fail to load!");
@@ -55,14 +52,17 @@
             <li class="article">
             <a data-bind="attr: { href: url }"><span data-bind="text: headline"></a>
             <p><span data-bind="text: snippet"></span></p>
-            </li>'
+            </li>
           </ul>
           </div>
         </div>
       </main>
     </div>
     <div id="names"></div>
-    <script async src="https://maps.googleapis.com/maps/api/js?callback=loadMap" onerror="googleError()"></script>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/knockout-3.4.0.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?callback=loadMap" onerror="googleError()"></script>
     <script src="js/app.js"></script>
   </body>
 </html>
