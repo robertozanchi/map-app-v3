@@ -2,6 +2,11 @@
 
 This is project 4 of Udacity's Front-End Web Developer Nanodegree.
 
+##About this project
+
+I developed a single page application featuring locations on the map of a neighborhood in New York City.
+The application was developed using Knockout.js and incorporates data points from two third-party APIs: Wikipedia and The New York Times. 
+
 ## Instructions
 1. Clone or download code from GitHub repository https://github.com/robertozanchi/neighborhood-map
 1. Unzip and save files on your local machine
